@@ -48,19 +48,22 @@ class ZooplaQuery(object):
             tree = lxml.etree.fromstring(response.read())
         except urllib2.HTTPError as ex:
             raise ZooplaError('The API has not been set. Set the following environ variable: ZOOPLA_API_KEY')
+
         items = []
         for listing in tree.iter('listing'):
             listing_item = {}
             for p in listing:
-                if p.tag in fields:
-                    if p.tag in ['listing_id', 'num_bathrooms', 'num_bedrooms', 'num_floors', 'num_recepts', 'price']:
-                        listing_item[p.tag] = int(p.text) if p.text else 0
-                    elif p.tag in ['last_published_date']:
-                        listing_item[p.tag] = p.text[:10]
-                    elif p.tag in ['latitude', 'longitude']:
-                        listing_item[p.tag] = float(p.text)
-                    else:
-                        listing_item[p.tag] = p.text
+                if p.tag not in fields:
+                    continue
+
+                if p.tag in ['listing_id', 'num_bathrooms', 'num_bedrooms', 'num_floors', 'num_recepts', 'price']:
+                    listing_item[p.tag] = int(p.text) if p.text else 0
+                elif p.tag in ['last_published_date']:
+                    listing_item[p.tag] = p.text[:10]
+                elif p.tag in ['latitude', 'longitude']:
+                    listing_item[p.tag] = float(p.text)
+                else:
+                    listing_item[p.tag] = p.text
             if 'latitude' in listing_item and 'longitude' in listing_item:
                 listing_item['location'] = '{0}, {1}'.format(listing_item['latitude'], listing_item['longitude'])
             items.append(listing_item)
