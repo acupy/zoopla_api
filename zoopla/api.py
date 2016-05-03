@@ -2,27 +2,22 @@ import urllib2
 import lxml.etree
 import os
 
+from zoopla import validate, ZooplaError
+
+
 URL = "http://api.zoopla.co.uk/api/v1/property_listings"
 
-class ZooplaError(Exception):
-    pass
+
+class ListingStatus(object):
+    sale = 'sale'
+    rent = 'rent'
 
 
 class ZooplaQuery(object):
-    supported_fields = ['listing_id', 'outcode', 'post_town', 'displayable_address', 'county',
-                        'country', 'num_bathrooms', 'num_bedrooms', 'num_floors', 'num_recepts',
-                        'listing_status', 'status', 'price', 'price_modifier', 'price_change',
-                        'property_type', 'street_name', 'thumbnail_url', 'image_url', 'image_caption',
-                        'floor_plan', 'description', 'short_description', 'details_url', 'new_home',
-                        'latitude', 'longitude', 'first_published_date', 'last_published_date',
-                        'agent_name', 'agent_logo', 'agent_phone']
 
-    supported_filters = ['radius', 'area', 'order_by', 'ordering', 'listing_status', 'include_sold',
-                         'include_rented', 'minimum_price', 'maximum_price', 'minimum_beds',
-                         'maximum_beds', 'furnished', 'property_type', 'new_homes', 'chain_free',
-                         'keywords', 'listing_id', 'branch_id', 'page_number', 'page_size', 'summarised']
     @classmethod
-    def select(cls, fields, number_of_items=10, **kwargs):
+    @validate
+    def select(cls, fields=None, number_of_items=10, **kwargs):
         """
         Return the requested properties
         :param fields: list of fields as a string
@@ -30,7 +25,8 @@ class ZooplaQuery(object):
         :return: list of properties
         """
 
-        ZooplaQuery.__validate(fields, kwargs)
+        if not fields:
+            fields = ['listing_id']
 
         kwargs['api_key'] = ZooplaQuery.__get_api_key()
         kwargs['page_size'] = number_of_items if number_of_items < 100 else 100
@@ -46,10 +42,12 @@ class ZooplaQuery(object):
         :param fields: the attributes to return
         :return: list of dicts
         """
-
-        request = urllib2.Request(the_request_url, headers={"Accept": "application/xml"})
-        response = urllib2.urlopen(request)
-        tree = lxml.etree.fromstring(response.read())
+        try:
+            request = urllib2.Request(the_request_url, headers={"Accept": "application/xml"})
+            response = urllib2.urlopen(request)
+            tree = lxml.etree.fromstring(response.read())
+        except urllib2.HTTPError as ex:
+            raise ZooplaError('The API has not been set. Set the following environ variable: ZOOPLA_API_KEY')
         items = []
         for listing in tree.iter('listing'):
             listing_item = {}
@@ -91,23 +89,4 @@ class ZooplaQuery(object):
         filters = ['{0}={1}'.format(the_key, the_value) for the_key, the_value in filters.items()]
         return '{url}?{filters}&summarised=yes'.format(url=URL, filters='&'.join(filters))
 
-    @classmethod
-    def __validate(cls, fields, filters):
-        """
-        Validate the fields and the filters
-        :param fields: list
-        :param filters: dict
-        :return:
-        """
-
-        if 'area' not in filters and 'radius' not in filters:
-            raise ZooplaError('The area or radius has to be specified in the fields.')
-
-        invalid_fields = list(set(fields) - set(cls.supported_fields))
-        if invalid_fields:
-            raise ZooplaError('Invalid fields: {0}'.format(', '.join(invalid_fields)))
-
-        invalid_filters = list(set(filters.keys()) - set(cls.supported_filters))
-        if invalid_filters:
-            raise ZooplaError('Invalid filters: {0}'.format(', '.join(invalid_filters)))
 

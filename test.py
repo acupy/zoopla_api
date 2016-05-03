@@ -1,6 +1,6 @@
 import os
 
-from zooplapi import ZooplaQuery
+from zoopla.api import ZooplaQuery, ListingStatus
 
 os.environ['ZOOPLA_API_KEY'] = '[API_KEY_GOES_HERE]'
 
@@ -10,8 +10,8 @@ fields = ['listing_id', 'post_town', 'displayable_address', 'county', 'num_bathr
 
 for prop in ZooplaQuery.select(fields,
                                minimum_beds=2,
-                               area= 'Manchester',
-                               listing_status='sale',
+                               area='Manchester',
+                               listing_status=ListingStatus.sale,
                                minimum_price=100000,
                                maximum_price=300000):
     print "\n"

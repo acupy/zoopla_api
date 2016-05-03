@@ -1,0 +1,2 @@
+class ZooplaError(Exception):
+    pass
