@@ -29,6 +29,7 @@ class ZooplaQuery(object):
         :param filters: dict, key: field, value: the value
         :return: list of properties
         """
+
         ZooplaQuery.__validate(fields, filters)
 
         filters['api_key'] = ZooplaQuery.__get_api_key()
@@ -39,6 +40,13 @@ class ZooplaQuery(object):
 
     @staticmethod
     def __get_result(the_request_url, fields):
+        """
+        Return the data as json
+        :param the_request_url: the url with filters
+        :param fields: the attributes to return
+        :return: list of dicts
+        """
+
         request = urllib2.Request(the_request_url, headers={"Accept": "application/xml"})
         response = urllib2.urlopen(request)
         tree = lxml.etree.fromstring(response.read())
@@ -62,6 +70,10 @@ class ZooplaQuery(object):
 
     @staticmethod
     def __get_api_key():
+        """
+        Return the API key from the environment
+        :return: string
+        """
 
         if 'ZOOPLA_API_KEY' in os.environ:
             return os.environ['ZOOPLA_API_KEY']
@@ -70,11 +82,24 @@ class ZooplaQuery(object):
 
     @staticmethod
     def __get_request(filters):
+        """
+        Return the request url with filters
+        :param filters: dict of filters
+        :return: string
+        """
+
         filters = ['{0}={1}'.format(the_key, the_value) for the_key, the_value in filters.items()]
         return '{url}?{filters}&summarised=yes'.format(url=URL, filters='&'.join(filters))
 
     @classmethod
     def __validate(cls, fields, filters):
+        """
+        Validate the fields and the filters
+        :param fields: list
+        :param filters: dict
+        :return:
+        """
+
         if 'area' not in filters and 'radius' not in filters:
             raise ZooplaError('The area or radius has to be specified in the fields.')
 
