@@ -22,7 +22,7 @@ class ZooplaQuery(object):
                          'maximum_beds', 'furnished', 'property_type', 'new_homes', 'chain_free',
                          'keywords', 'listing_id', 'branch_id', 'page_number', 'page_size', 'summarised']
     @classmethod
-    def select(cls, fields, filters, number_of_items=10):
+    def select(cls, fields, number_of_items=10, **kwargs):
         """
         Return the requested properties
         :param fields: list of fields as a string
@@ -30,11 +30,11 @@ class ZooplaQuery(object):
         :return: list of properties
         """
 
-        ZooplaQuery.__validate(fields, filters)
+        ZooplaQuery.__validate(fields, kwargs)
 
-        filters['api_key'] = ZooplaQuery.__get_api_key()
-        filters['page_size'] = number_of_items if number_of_items < 100 else 100
-        the_request_url = ZooplaQuery.__get_request(filters)
+        kwargs['api_key'] = ZooplaQuery.__get_api_key()
+        kwargs['page_size'] = number_of_items if number_of_items < 100 else 100
+        the_request_url = ZooplaQuery.__get_request(kwargs)
 
         return ZooplaQuery.__get_result(the_request_url, fields)
 
