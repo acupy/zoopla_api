@@ -1,4 +1,5 @@
-from zoopla import ZooplaError, supported_fields, supported_filters
+from zoopla import ZooplaError
+from config import supported_fields, supported_filters
 
 def validate(f):
     def func_wrapper(cls, fields=None, number_of_items=10, **kwargs):

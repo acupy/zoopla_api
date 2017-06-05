@@ -1,8 +1,8 @@
 import os
 
-from zoopla.api import ZooplaQuery, ListingStatus
+from zoopla import ZooplaQuery, ListingStatus
 
-os.environ['ZOOPLA_API_KEY'] = '[API_KEY_GOES_HERE]'
+os.environ['ZOOPLA_API_KEY'] = os.environ['ZOOPLA_API_KEY'] or '[API_KEY_GOES_HERE]'
 
 fields = ['listing_id', 'post_town', 'displayable_address', 'county', 'num_bathrooms', 'num_bedrooms', 'num_floors',
           'num_recepts', 'status', 'price', 'property_type', 'street_name', 'thumbnail_url', 'short_description',

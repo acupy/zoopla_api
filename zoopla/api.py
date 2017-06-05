@@ -2,8 +2,8 @@ import urllib2
 import lxml.etree
 import os
 
-from zoopla import validate, ZooplaError
-
+from zoopla import ZooplaError
+from decorators import validate
 
 URL = "http://api.zoopla.co.uk/api/v1/property_listings"
 
@@ -91,5 +91,3 @@ class ZooplaQuery(object):
 
         filters = ['{0}={1}'.format(the_key, the_value) for the_key, the_value in filters.items()]
         return '{url}?{filters}&summarised=yes'.format(url=URL, filters='&'.join(filters))
-
-
