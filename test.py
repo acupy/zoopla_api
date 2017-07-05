@@ -8,12 +8,15 @@ fields = ['listing_id', 'post_town', 'displayable_address', 'county', 'num_bathr
           'num_recepts', 'status', 'price', 'property_type', 'street_name', 'thumbnail_url', 'short_description',
           'details_url', 'last_published_date', 'latitude', 'longitude']
 
-for prop in ZooplaQuery.select(fields,
-                               minimum_beds=2,
-                               area='Manchester',
-                               listing_status=ListingStatus.sale,
-                               minimum_price=100000,
-                               maximum_price=300000):
+filters = {
+   'minimum_beds': 2,
+   'area': 'Manchester',
+   'listing_status': ListingStatus.sale,
+   'minimum_price': 100000,
+   'maximum_price': 300000
+}
+
+for prop in ZooplaQuery.select(fields, **filters):
     print "\n"
     for f in prop:
         print f, prop[f]

@@ -2,17 +2,19 @@ from zoopla import ZooplaError
 from config import supported_fields, supported_filters
 
 def validate(f):
-    def func_wrapper(cls, fields=None, number_of_items=10, **kwargs):
+    def func_wrapper(cls, fields=None, **kwargs):
         """
         Validate the fields and the filters
         :param fields: list
-        :param number_of_items: int
         :param kwargs: filters
         :return:
         """
 
         if 'area' not in kwargs and 'radius' not in kwargs:
             raise ZooplaError('The area or radius has to be specified in the fields.')
+
+        if 'number_of_items' not in kwargs:
+            kwargs['number_of_items']=10
 
         invalid_fields = list(set(fields) - set(supported_fields))
         if invalid_fields:
@@ -22,6 +24,6 @@ def validate(f):
         if invalid_filters:
             raise ZooplaError('Invalid filters: {0}'.format(', '.join(invalid_filters)))
 
-        return f(cls, fields=fields, number_of_items=number_of_items, **kwargs)
+        return f(cls, fields=fields, **kwargs)
 
     return func_wrapper

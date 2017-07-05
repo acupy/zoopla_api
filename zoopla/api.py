@@ -17,7 +17,7 @@ class ZooplaQuery(object):
 
     @classmethod
     @validate
-    def select(cls, fields=None, number_of_items=10, **kwargs):
+    def select(cls, fields, **kwargs):
         """
         Return the requested properties
         :param fields: list of fields as a string
@@ -29,7 +29,8 @@ class ZooplaQuery(object):
             fields = ['listing_id']
 
         kwargs['api_key'] = ZooplaQuery.__get_api_key()
-        kwargs['page_size'] = number_of_items if number_of_items < 100 else 100
+        kwargs['page_size'] = kwargs['number_of_items'] if kwargs['number_of_items'] < 100 else 100
+        del kwargs['number_of_items']
         the_request_url = ZooplaQuery.__get_request(kwargs)
 
         return ZooplaQuery.__get_result(the_request_url, fields)
