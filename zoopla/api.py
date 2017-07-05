@@ -12,6 +12,9 @@ class ListingStatus(object):
     sale = 'sale'
     rent = 'rent'
 
+class PropertyType(object):
+    flats = 'flats'
+    houses = 'houses'
 
 class ZooplaQuery(object):
 
@@ -29,8 +32,6 @@ class ZooplaQuery(object):
             fields = ['listing_id']
 
         kwargs['api_key'] = ZooplaQuery.__get_api_key()
-        kwargs['page_size'] = kwargs['number_of_items'] if kwargs['number_of_items'] < 100 else 100
-        del kwargs['number_of_items']
         the_request_url = ZooplaQuery.__get_request(kwargs)
 
         return ZooplaQuery.__get_result(the_request_url, fields)
@@ -41,16 +42,18 @@ class ZooplaQuery(object):
         Return the data as json
         :param the_request_url: the url with filters
         :param fields: the attributes to return
-        :return: list of dicts
+        :return: dit with result_count and listings with list of dicts
         """
         try:
-            request = urllib2.Request(the_request_url, headers={"Accept": "application/xml"})
+            request = urllib2.Request(the_request_url, headers={'Accept': 'application/xml'})
             response = urllib2.urlopen(request)
             tree = lxml.etree.fromstring(response.read())
         except urllib2.HTTPError as ex:
-            raise ZooplaError('The API has not been set. Set the following environ variable: ZOOPLA_API_KEY')
+            raise ZooplaError('The API has not been set. Set the following environ variable: ZOOPLA_API_KEY.')
 
-        items = []
+        result_count = tree.find('result_count').text
+
+        listings = []
         for listing in tree.iter('listing'):
             listing_item = {}
             for p in listing:
@@ -64,11 +67,11 @@ class ZooplaQuery(object):
                 elif p.tag in ['latitude', 'longitude']:
                     listing_item[p.tag] = float(p.text)
                 else:
-                    listing_item[p.tag] = p.text
+                    listing_item[p.tag] = p.text.replace('"', '\'') if p.text else p.text
             if 'latitude' in listing_item and 'longitude' in listing_item:
                 listing_item['location'] = '{0}, {1}'.format(listing_item['latitude'], listing_item['longitude'])
-            items.append(listing_item)
-        return items
+            listings.append(listing_item)
+        return { 'listings': listings, 'result_count': result_count }
 
     @staticmethod
     def __get_api_key():

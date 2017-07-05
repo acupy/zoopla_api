@@ -10,4 +10,4 @@ supported_filters = ['radius', 'area', 'order_by', 'ordering', 'listing_status',
                      'include_rented', 'minimum_price', 'maximum_price', 'minimum_beds',
                      'maximum_beds', 'furnished', 'property_type', 'new_homes', 'chain_free',
                      'keywords', 'listing_id', 'branch_id', 'page_number', 'page_size', 'summarised',
-                     'number_of_items']
+                     'number_of_items', 'latitude', 'longitude']

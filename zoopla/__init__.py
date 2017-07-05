@@ -1,2 +1,2 @@
 from errors import ZooplaError
-from api import ListingStatus, ZooplaQuery
+from api import ListingStatus, PropertyType, ZooplaQuery

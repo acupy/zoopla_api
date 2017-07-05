@@ -19,10 +19,14 @@ filters = {
    'maximum_price': 300000
 }
 
-for prop in ZooplaQuery.select(fields, **filters):
+for prop in ZooplaQuery.select(fields, **filters)['listings']:
     print "\n"
     for f in prop:
         print f, prop[f]
 ```
+
+[Click here to see a bit more complex example](https://github.com/acupy/zoopla_api/blob/master/test.py)
+
+**Note that your API key has the following rate limits: 100 calls per second and 100 calls per hour**
 
 [Zoopla API official documentation](http://developer.zoopla.com/docs)

@@ -13,9 +13,6 @@ def validate(f):
         if 'area' not in kwargs and 'radius' not in kwargs:
             raise ZooplaError('The area or radius has to be specified in the fields.')
 
-        if 'number_of_items' not in kwargs:
-            kwargs['number_of_items']=10
-
         invalid_fields = list(set(fields) - set(supported_fields))
         if invalid_fields:
             raise ZooplaError('Invalid fields: {0}'.format(', '.join(invalid_fields)))
